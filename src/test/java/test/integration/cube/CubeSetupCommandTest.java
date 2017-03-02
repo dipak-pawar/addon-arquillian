@@ -20,14 +20,12 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("touch src/test/resources/Dockerfile").execute("arquillian-cube-setup --type docker --file-path src/test/resources/ --docker-file-name Dockerfile");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-docker").withType("pom").withScope("test");
-        assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("definitionFormat", "CUBE");
         assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("dockerContainers",
-            "containerName:\n" +
-                "      buildImage:\n" +
-                "        dockerfileLocation: src/test/resources\n" +
-                "        noCache: true\n" +
-                "        remove: true\n" +
-                "        dockerfileName: Dockerfile");
+            "version: '2'\n" +
+                "    services:\n" +
+                "      containerName:\n" +
+                "        build:\n" +
+                "          context: src/test/resources");
     }
 
     @Test
@@ -38,14 +36,13 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type docker --file-path src/test/resources/Dockerfile1");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-docker").withType("pom").withScope("test");
-
-        assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("definitionFormat", "CUBE");
         assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("dockerContainers",
-            "containerName:\n" +
-                "      buildImage:\n" +
-                "        dockerfileLocation: src/test/resources\n" +
-                "        noCache: true\n" +
-                "        remove: true");
+            "version: '2'\n" +
+                "    services:\n" +
+                "      containerName:\n" +
+                "        build:\n" +
+                "          context: src/test/resources\n" +
+                "          dockerfile: Dockerfile1");
     }
 
     @Test
@@ -53,19 +50,17 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("touch src/test/resources/Dockerfile")
-            .execute("arquillian-cube-setup --type docker --file-path src/test/resources/ --docker-file-name Dockerfile --docker-machine --machine-name dev");
+            .execute("arquillian-cube-setup --type docker --file-path src/test/resources/ --docker-file-name Dockerfile --docker-machine-name dev");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-docker").withType("pom").withScope("test");
 
-        assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("definitionFormat", "CUBE");
         assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("machineName", "dev");
         assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("dockerContainers",
-            "containerName:\n" +
-                "      buildImage:\n" +
-                "        dockerfileLocation: src/test/resources\n" +
-                "        noCache: true\n" +
-                "        remove: true\n" +
-                "        dockerfileName: Dockerfile");
+            "version: '2'\n" +
+                "    services:\n" +
+                "      containerName:\n" +
+                "        build:\n" +
+                "          context: src/test/resources");
     }
 
     @Test
@@ -85,12 +80,11 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("touch docker-compose.yml")
-            .execute("arquillian-cube-setup --type docker-compose --file-path docker-compose.yml --docker-machine --machine-name dev1");
+            .execute("arquillian-cube-setup --type docker-compose --file-path docker-compose.yml --docker-machine-name dev1");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-docker").withType("pom").withScope("test");
 
-        assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("dockerContainersFile", "docker-compose.yml");
-        assertThat(project).hasArquillianConfig().withExtension("docker").withProperty("machineName", "dev1");
+        assertThat(project).hasArquillianConfig().withExtension("docker").withProperties("dockerContainersFile:docker-compose.yml","machineName:dev1");
     }
 
     @Test
