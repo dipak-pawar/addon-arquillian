@@ -89,7 +89,7 @@ public class CubeSetupFacet extends AbstractVersionedFacet {
         return type.hasValue() && "docker-compose".equals(getStringForCLIDisplay(type.getValue()));
     }
 
-    private boolean isOpenshift(UISelectOne<String> type) {
+    public boolean isOpenshift(UISelectOne<String> type) {
         return type.hasValue() && "openshift".equals(getStringForCLIDisplay(type.getValue()));
     }
 

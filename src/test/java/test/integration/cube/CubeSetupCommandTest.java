@@ -124,7 +124,6 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type kubernetes --file-path kubernetes.yml");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-kubernetes").withType("pom").withScope("test");
-
         assertThat(project).hasArquillianConfig().withExtension("kubernetes");
     }
 
@@ -136,7 +135,6 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type kubernetes --file-path src/test/resources/kubernetes_1.json");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-kubernetes").withType("pom").withScope("test");
-
         assertThat(project).hasArquillianConfig().withExtension("kubernetes").withProperty("env.config.resource.name", "kubernetes_1.json");
     }
 
@@ -147,7 +145,6 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type kubernetes --file-path http://foo.com");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-kubernetes").withType("pom").withScope("test");
-
         assertThat(project).hasArquillianConfig().withExtension("kubernetes").withProperty("env.config.url", "http://foo.com");
     }
 
@@ -159,7 +156,16 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type openshift --file-path src/test/resources/openshift.json");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-openshift").withType("pom").withScope("test");
+        assertThat(project).hasArquillianConfig().withExtension("openshift").withProperty("env.config.resource.name", "openshift.json");
+    }
 
-        assertThat(project).hasArquillianConfig().withExtension("openshift").withProperty("definitionsFile", "src/test/resources/openshift.json");
+    @Test
+    public void should_setup_arquillian_cube_for_openshift_with_url_resource() throws Exception {
+
+        shell().execute("arquillian-setup --standalone --test-framework junit")
+            .execute("arquillian-cube-setup --type openshift --file-path http://foo.com/config.json");
+
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-openshift").withType("pom").withScope("test");
+        assertThat(project).hasArquillianConfig().withExtension("openshift").withProperty("env.config.url", "http://foo.com/config.json");
     }
 }
